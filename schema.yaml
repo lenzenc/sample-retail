@@ -1,0 +1,547 @@
+openapi: 3.1.0
+info:
+  title: Sample Retail API
+  description: Sample retail API with items and orders
+  version: 1.0.0
+paths:
+  /items:
+    get:
+      summary: Get Items
+      operationId: get_items_items_get
+      parameters:
+      - name: is_active
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Is Active
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 10
+          title: Per Page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_Item_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      summary: Create Item
+      operationId: create_item_items_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /items/{item_id}:
+    get:
+      summary: Get Item
+      operationId: get_item_items__item_id__get
+      parameters:
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Item Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      summary: Update Item
+      operationId: update_item_items__item_id__put
+      parameters:
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Item Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      summary: Delete Item
+      operationId: delete_item_items__item_id__delete
+      parameters:
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Item Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /orders:
+    get:
+      summary: Get Orders
+      operationId: get_orders_orders_get
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/OrderStatus'
+          - type: 'null'
+          title: Status
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 10
+          title: Per Page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_Order_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      summary: Create Order
+      operationId: create_order_orders_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /orders/{order_id}:
+    get:
+      summary: Get Order
+      operationId: get_order_orders__order_id__get
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Order Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /orders/{order_id}/status:
+    put:
+      summary: Update Order Status
+      operationId: update_order_status_orders__order_id__status_put
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Order Id
+      - name: status
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/OrderStatus'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Item:
+      properties:
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        barcode:
+          type: string
+          title: Barcode
+        price:
+          type: number
+          title: Price
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+        id:
+          type: integer
+          title: Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - title
+      - barcode
+      - price
+      - id
+      - created_at
+      - updated_at
+      title: Item
+    ItemCreate:
+      properties:
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        barcode:
+          type: string
+          title: Barcode
+        price:
+          type: number
+          title: Price
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+      type: object
+      required:
+      - title
+      - barcode
+      - price
+      title: ItemCreate
+    Order:
+      properties:
+        id:
+          type: integer
+          title: Id
+        customer_id:
+          type: integer
+          title: Customer Id
+        picked_key_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Picked Key Id
+        order_number:
+          type: string
+          title: Order Number
+        total_amount:
+          type: number
+          title: Total Amount
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        order_items:
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          type: array
+          title: Order Items
+          default: []
+      type: object
+      required:
+      - id
+      - customer_id
+      - picked_key_id
+      - order_number
+      - total_amount
+      - status
+      - created_at
+      - updated_at
+      title: Order
+    OrderCreate:
+      properties:
+        customer_id:
+          type: integer
+          title: Customer Id
+        picked_key_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Picked Key Id
+        order_number:
+          type: string
+          title: Order Number
+        order_items:
+          items:
+            $ref: '#/components/schemas/OrderItemBase'
+          type: array
+          title: Order Items
+      type: object
+      required:
+      - customer_id
+      - order_number
+      - order_items
+      title: OrderCreate
+    OrderItem:
+      properties:
+        item_id:
+          type: integer
+          title: Item Id
+        quantity:
+          type: integer
+          title: Quantity
+          default: 1
+        unit_price:
+          type: number
+          title: Unit Price
+        subtotal:
+          type: number
+          title: Subtotal
+        order_id:
+          type: integer
+          title: Order Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - item_id
+      - unit_price
+      - subtotal
+      - order_id
+      - created_at
+      - updated_at
+      title: OrderItem
+    OrderItemBase:
+      properties:
+        item_id:
+          type: integer
+          title: Item Id
+        quantity:
+          type: integer
+          title: Quantity
+          default: 1
+        unit_price:
+          type: number
+          title: Unit Price
+        subtotal:
+          type: number
+          title: Subtotal
+      type: object
+      required:
+      - item_id
+      - unit_price
+      - subtotal
+      title: OrderItemBase
+    OrderStatus:
+      type: string
+      enum:
+      - PENDING
+      - IN_PROGRESS
+      - FULFILLED
+      title: OrderStatus
+    PaginatedResponse_Item_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/Item'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        per_page:
+          type: integer
+          title: Per Page
+        total_pages:
+          type: integer
+          title: Total Pages
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - per_page
+      - total_pages
+      title: PaginatedResponse[Item]
+    PaginatedResponse_Order_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/Order'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        per_page:
+          type: integer
+          title: Per Page
+        total_pages:
+          type: integer
+          title: Total Pages
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - per_page
+      - total_pages
+      title: PaginatedResponse[Order]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
